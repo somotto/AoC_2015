@@ -4,8 +4,6 @@ import (
 	"testing"
 )
 
-// Import your utils package
-
 func TestSmallestSideArea(t *testing.T) {
 	tests := []struct {
 		l, w, h int
