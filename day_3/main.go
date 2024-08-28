@@ -19,6 +19,10 @@ func main() {
 	directions := string(data)
 	housesRecievedMore := houses.CountHouses(directions)
 
+	housesRecievedMoreWithSantaandRobo := houses.CountHousesWithSantaRobo(directions)
+
 	fmt.Println(housesRecievedMore)
+
+	fmt.Println(housesRecievedMoreWithSantaandRobo)
 
 }
