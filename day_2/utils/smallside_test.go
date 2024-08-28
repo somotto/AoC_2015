@@ -11,10 +11,10 @@ func TestSmallestSideArea(t *testing.T) {
 		l, w, h int
 		want    int
 	}{
-		{2, 3, 4, 6},  // 2*3 is the smallest side area
-		{1, 1, 10, 1}, // 1*1 is the smallest side area
-		{5, 1, 3, 3},  // 1*3 is the smallest side area
-		{7, 4, 5, 20}, // 4*5 is the smallest side area
+		{2, 3, 4, 6},
+		{1, 1, 10, 1},
+		{5, 1, 3, 3},  
+		{7, 4, 5, 20}, 
 	}
 
 	for _, tt := range tests {
