@@ -12,5 +12,9 @@ func main() {
 		fmt.Println("Error:", err)
 		return
 	}
+
+	niceCount2 := utils.CountNiceStrPart2(filename)
+	
 	fmt.Printf("Number of nice strings: %d\n", niceCount)
+	fmt.Printf("Number of nice strings: %d\n", niceCount2)
 }
