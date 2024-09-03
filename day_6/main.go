@@ -2,63 +2,65 @@ package main
 
 import (
 	"bufio"
+	"day_6/utils"
 	"fmt"
 	"os"
-
-	"day_6/utils" // Replace 'yourmodule' with the actual module name
 )
 
 // Define the grid dimensions
 const gridSize = 1000
 
-// Create a type alias for the grid
-type Grid [gridSize][gridSize]int
+// Create type aliases for the grids
+type GridPart1 [gridSize][gridSize]bool
+type GridPart2 [gridSize][gridSize]int
 
-// ApplyCommand updates the grid based on the command
-func ApplyCommand(grid *Grid, command string) {
-	// Split command into parts using the utility function
+// ApplyCommand updates both grids based on the command
+func ApplyCommand(gridPart1 *GridPart1, gridPart2 *GridPart2, command string) {
 	parts := utils.Fields(command)
+	var action string
+	var x1, y1, x2, y2 int
 
-	// Determine the action and corresponding state
-	action := parts[0] // 'turn' or 'toggle'
-	var state int
-	if action == "toggle" {
-		state = -1 // Toggle
-		// For toggle commands, coordinates are in parts[1] and parts[3]
-		x1, y1 := ParseCoordinates(parts[1])
-		x2, y2 := ParseCoordinates(parts[3])
-		// Apply the toggle command to the grid
-		for i := x1; i <= x2; i++ {
-			for j := y1; j <= y2; j++ {
-				grid[i][j] ^= 1 // Toggle the light (0 <-> 1)
-			}
-		}
-	} else if action == "turn" {
-		// For turn commands, determine if it's 'on' or 'off'
-		if parts[1] == "on" {
-			state = 1 // Turn on
-		} else if parts[1] == "off" {
-			state = 0 // Turn off
-		} else {
-			fmt.Printf("Unknown turn action: %s\n", parts[1])
-			return
-		}
-		// For turn commands, coordinates are in parts[2] and parts[4]
-		x1, y1 := ParseCoordinates(parts[2])
-		x2, y2 := ParseCoordinates(parts[4])
-		// Apply the turn command to the grid
-		for i := x1; i <= x2; i++ {
-			for j := y1; j <= y2; j++ {
-				grid[i][j] = state // Turn on or off
-			}
-		}
+	if parts[0] == "toggle" {
+		action = "toggle"
+		x1, y1 = ParseCoordinates(parts[1])
+		x2, y2 = ParseCoordinates(parts[3])
+	} else if parts[0] == "turn" {
+		action = parts[1] // "on" or "off"
+		x1, y1 = ParseCoordinates(parts[2])
+		x2, y2 = ParseCoordinates(parts[4])
 	} else {
-		fmt.Printf("Unknown action: %s\n", action)
+		fmt.Printf("Unknown action: %s\n", parts[0])
+		return
+	}
+
+	for i := x1; i <= x2; i++ {
+		for j := y1; j <= y2; j++ {
+			// Part 1: On/Off state
+			switch action {
+			case "on":
+				gridPart1[i][j] = true
+			case "off":
+				gridPart1[i][j] = false
+			case "toggle":
+				gridPart1[i][j] = !gridPart1[i][j]
+			}
+
+			// Part 2: Brightness levels
+			switch action {
+			case "on":
+				gridPart2[i][j]++
+			case "off":
+				if gridPart2[i][j] > 0 {
+					gridPart2[i][j]--
+				}
+			case "toggle":
+				gridPart2[i][j] += 2
+			}
+		}
 	}
 }
 
-
-// parseCoordinates converts coordinate strings to integers using the utility functions
+// ParseCoordinates converts coordinate strings to integers
 func ParseCoordinates(coord string) (int, int) {
 	parts := utils.Split(coord, ",")
 	x := utils.Atoi(parts[0])
@@ -66,17 +68,28 @@ func ParseCoordinates(coord string) (int, int) {
 	return x, y
 }
 
-// CountLightsOn counts the number of lights that are on
-func CountLightsOn(grid *Grid) int {
+// CountLightsOn counts the number of lights that are on (Part 1)
+func CountLightsOn(grid *GridPart1) int {
 	count := 0
 	for i := 0; i < gridSize; i++ {
 		for j := 0; j < gridSize; j++ {
-			if grid[i][j] == 1 {
+			if grid[i][j] {
 				count++
 			}
 		}
 	}
 	return count
+}
+
+// CalculateTotalBrightness calculates the total brightness of all lights (Part 2)
+func CalculateTotalBrightness(grid *GridPart2) int {
+	total := 0
+	for i := 0; i < gridSize; i++ {
+		for j := 0; j < gridSize; j++ {
+			total += grid[i][j]
+		}
+	}
+	return total
 }
 
 func main() {
@@ -86,14 +99,16 @@ func main() {
 		return
 	}
 	defer file.Close()
-	// Initialize the grid
-	var grid Grid
+
+	// Initialize the grids
+	var gridPart1 GridPart1
+	var gridPart2 GridPart2
 
 	// Read input commands
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		command := scanner.Text()
-		ApplyCommand(&grid, command)
+		ApplyCommand(&gridPart1, &gridPart2, command)
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -101,7 +116,9 @@ func main() {
 		return
 	}
 
-	// Count and print the number of lights that are on
-	lightsOn := CountLightsOn(&grid)
-	fmt.Printf("Total lights on: %d\n", lightsOn)
+	// Calculate and print results for both parts
+	lightsOn := CountLightsOn(&gridPart1)
+	totalBrightness := CalculateTotalBrightness(&gridPart2)
+	fmt.Printf("Part 1 - Total lights on: %d\n", lightsOn)
+	fmt.Printf("Part 2 - Total brightness: %d\n", totalBrightness)
 }
