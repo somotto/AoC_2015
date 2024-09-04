@@ -95,6 +95,21 @@ func main() {
 	}
 
 	// Compute and print the signal for wire "a"
-	signal := getSignal("a")
-	fmt.Printf("The signal for wire 'a' is: %d\n", signal)
+	signalA := getSignal("a")
+	fmt.Printf("The signal for wire 'a' is: %d\n", signalA)
+
+	// Override wire 'b' with the signal from wire 'a'
+	instructions["b"] = strconv.Itoa(int(signalA))
+
+	// Reset all wires
+	wires = map[string]uint16{}
+	instructionsCopy := make(map[string]string)
+	for k, v := range instructions {
+		instructionsCopy[k] = v
+	}
+	instructions = instructionsCopy
+
+	// Recompute the signal for wire 'a'
+	newSignalA := getSignal("a")
+	fmt.Printf("The new signal for wire 'a' after overriding 'b' and resetting is: %d\n", newSignalA)
 }
