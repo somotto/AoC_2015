@@ -2,11 +2,12 @@ package part1
 
 import (
 	"strconv"
+	"strings"
 )
 
 // lookAndSay generates the next term in the sequence
 func LookAndSay(sequence string) string {
-	var result string
+	var result strings.Builder
 	i := 0
 	for i < len(sequence) {
 		count := 1
@@ -14,14 +15,16 @@ func LookAndSay(sequence string) string {
 			i++
 			count++
 		}
-		result += strconv.Itoa(count) + string(sequence[i])
+		result.WriteString(strconv.Itoa(count))
+		result.WriteByte(sequence[i])
 		i++
 	}
-	return result
+	return result.String()
 }
 
 // lengthOf40thLookAndSay calculates the length of the 40th term
 func LengthOf40thLookAndSay(input string) int {
+
 	sequence := input
 	for i := 0; i < 40; i++ {
 		sequence = LookAndSay(sequence)
